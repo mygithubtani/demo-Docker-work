@@ -1,23 +1,43 @@
-name: Build and Push image to ACR
+name: Build and Push image to ACR 
+
 on:
     push:
         branches:
             - main
+
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
+
         steps:
             - name: checkout the code
               uses: actions/checkout@v2
+
             - name: Azure Login
               uses: azure/login@v2
               with:
                 creds: ${{secrets.AZURE_CREDENTIALS}}
+
             - name: ACR login
               run: |
-                az acr login --name mydockerregistry3
+                az acr login --name mydockeracrredgistry2
+
             - name: Build and push the image
               run: |
                 
-                docker build -t mydockerregistry3.azurecr.io/myapp:latest .
-                docker push mydockerregistry3.azurecr.io/myapp:latest
+                docker build -t mydockeracrredgistry2.azurecr.io/myapp:${{ github.sha }} .
+                docker push mydockeracrredgistry2.azurecr.io/myapp:${{ github.sha }}
+
+            - name: 'Deploy to Azure Container Instances'
+              uses: 'azure/aci-deploy@v1'
+              with:
+                  resource-group: docker
+                  dns-name-label: getstartedapp
+                  image: mydockeracrredgistry2.azurecr.io/myapp:${{ github.sha }}
+                  ports: 3000
+                  cpu: 1
+                  memory: 1
+                  registry-username: ${{ secrets.username }}
+                  registry-password: ${{ secrets.password }}
+                  name: helloworld
+                  location: 'west us 2'
