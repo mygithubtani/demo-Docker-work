@@ -32,12 +32,12 @@ jobs:
               uses: 'azure/aci-deploy@v1'
               with:
                   resource-group: docker
-                  dns-name-label: getstartedapp
+                  dns-name-label: todoapp
                   image: mydockeracrredgistry2.azurecr.io/myapp:${{ github.sha }}
                   ports: 3000
                   cpu: 1
                   memory: 1
                   registry-username: ${{ secrets.username }}
                   registry-password: ${{ secrets.password }}
-                  name: helloworld
+                  name: mycontaineroworld
                   location: 'west us 2'
